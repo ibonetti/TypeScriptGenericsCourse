@@ -1,10 +1,10 @@
 import React from 'react';
 import { ImportsNotUsedAsValues } from 'typescript';
-import IProperty from '../interfaces/IProperty';
+import ISorters from '../interfaces/ISorter';
 
 export interface ISortersProps<T> {
   object: T;
-  setProperty: (propertyType: IProperty<T>) => void;
+  setProperty: (propertyType: ISorters<T>) => void;
 }
 
 export function Sorters<T>(props: ISortersProps<T>) {

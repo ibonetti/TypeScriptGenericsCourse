@@ -5,13 +5,14 @@ import genericSearch from './utils/genericSearch';
 import { SearchInput } from './components/SearchInput';
 import genericSort from './utils/genericSort';
 import IWidget from './interfaces/IWidget';
-import IProperty from './interfaces/IProperty';
+import ISorters from './interfaces/ISorter';
 import IPerson from './interfaces/IPerson';
 import { Sorters } from './components/Sorters';
 import { WidgetRenderer } from './components/renderers/WidgetRenderer';
 import { PeopleRenderer } from './components/renderers/PeopleRenderer';
 import genericFilter from './utils/genericFilter';
 import { Filters } from './components/Filters';
+import IFilter from './interfaces/IFilter';
 
 function App() {
   //const query = '';
@@ -19,19 +20,19 @@ function App() {
   const [showPeople, setShowPeople] = useState<boolean>(false);
   const buttonText = showPeople ? 'Show Widgets' : 'ShowPeople';
   const [widgetFilterProperties, setWidgetFilterProperties] = useState<
-    Array<keyof IWidget>
+    Array<IFilter<IWidget>>
   >([]);
   const [peopleFilterProperties, setPeopleFilterProperties] = useState<
-    Array<keyof IPerson>
+    Array<IFilter<IPerson>>
   >([]);
   const [widgetSortProperty, setWidgetSortProperty] = useState<
-    IProperty<IWidget>
+    ISorters<IWidget>
   >({
     property: 'title',
     isDescending: true,
   });
   const [personSortProperty, setPersonSortProperty] = useState<
-    IProperty<IPerson>
+    ISorters<IPerson>
   >({
     property: 'firstName',
     isDescending: true,
@@ -59,14 +60,37 @@ function App() {
             object={widgets[0]}
             properties={widgetFilterProperties}
             onChangeFilter={(property) => {
-              widgetFilterProperties.includes(property)
-                ? setWidgetFilterProperties(
-                    widgetFilterProperties.filter((prop) => prop !== property)
+              const propertyMatch = widgetFilterProperties.some(
+                (widgetFilterProperty) =>
+                  widgetFilterProperty.property === property.property
+              );
+
+              const fullMatch = widgetFilterProperties.some(
+                (widgetFilterProperty) =>
+                  widgetFilterProperty.property === property.property &&
+                  widgetFilterProperty.isTruthySelected ===
+                    property.isTruthySelected
+              );
+
+              if (fullMatch) {
+                setWidgetFilterProperties(
+                  widgetFilterProperties.filter(
+                    (prop) => prop.property !== property.property
                   )
-                : setWidgetFilterProperties([
-                    ...widgetFilterProperties,
-                    property,
-                  ]);
+                );
+              } else if (propertyMatch) {
+                setWidgetFilterProperties([
+                  ...widgetFilterProperties.filter(
+                    (prop) => prop.property !== property.property
+                  ),
+                  property,
+                ]);
+              } else {
+                setWidgetFilterProperties([
+                  ...widgetFilterProperties,
+                  property,
+                ]);
+              }
             }}
           />
           {widgets

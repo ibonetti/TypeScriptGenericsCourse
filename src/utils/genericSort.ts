@@ -1,6 +1,6 @@
-import IProperty from '../interfaces/IProperty';
+import ISorters from '../interfaces/ISorter';
 
-export default function genericSort<T>(a: T, b: T, propertyType: IProperty<T>) {
+export default function genericSort<T>(a: T, b: T, propertyType: ISorters<T>) {
   const { property, isDescending } = propertyType;
   const result = () => {
     if (a[property] > b[property]) {
